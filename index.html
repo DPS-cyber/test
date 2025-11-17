@@ -67,40 +67,36 @@
 
     <p id="response"></p>
   </div>
+<script>
+  const scriptURL = "https://script.google.com/macros/s/AKfycbw74NznEFsXz-USa2XB83P1AG2YJhseoguENXXV_6__iwsl_moDxKeA_fNwq9nWhtOnBg/exec"; // <-- your script URL
 
-  <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbzd0u86RyMmMa6AwLWk9X_1Raqe3obQPCT-WdIZU415U-kTHanlZLyWh1B_XxZryCFrYQ/exec"; // <--- paste your Web App URL
+  document.getElementById("contactForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-    document.getElementById("contactForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
+    let formData = new FormData();
+    formData.append("origin", location.origin);
+    formData.append("name", e.target.name.value);
+    formData.append("email", e.target.email.value);
+    formData.append("phone", e.target.phone.value);
+    formData.append("service", e.target.service.value);
+    formData.append("message", e.target.message.value);
 
-      let data = {
-        name: e.target.name.value,
-        email: e.target.email.value,
-        phone: e.target.phone.value,
-        service: e.target.service.value,
-        message: e.target.message.value
-      };
+    try {
+      const res = await fetch(scriptURL, {
+        method: "POST",
+        body: formData
+      });
 
-      try {
-        const res = await fetch(scriptURL + "?origin=" + location.origin, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(data)
-        });
-
-        const json = await res.json();
-        document.getElementById("response").innerText = "Form submitted successfully!";
-
-        e.target.reset();
-      } catch (err) {
-        document.getElementById("response").innerText = "Error submitting the form.";
-      }
-    });
-  </script>
+      let text = await res.text();
+      document.getElementById("response").innerText = "Form submitted successfully!";
+      e.target.reset();
+    } catch (err) {
+      document.getElementById("response").innerText = "Error submitting the form.";
+    }
+  });
+</script>
 
 </body>
 </html>
+
 
