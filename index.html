@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contact Form</title>
+  <title>Secure Contact Form</title>
 
   <style>
     body {
@@ -11,6 +11,7 @@
       padding: 20px;
       background: #f4f4f4;
     }
+
     .form-container {
       max-width: 450px;
       margin: auto;
@@ -19,6 +20,7 @@
       border-radius: 8px;
       box-shadow: 0 3px 10px rgba(0,0,0,0.1);
     }
+
     input, textarea, button {
       width: 100%;
       margin-bottom: 15px;
@@ -27,6 +29,7 @@
       border-radius: 5px;
       border: 1px solid #ccc;
     }
+
     button {
       background: #4CAF50;
       color: white;
@@ -34,10 +37,16 @@
       cursor: pointer;
       font-size: 16px;
     }
+
     button:hover {
       background: #45a049;
     }
-    #response { text-align: center; margin-top: 10px; font-weight: bold; }
+
+    #response {
+      text-align: center;
+      margin-top: 10px;
+      font-weight: bold;
+    }
   </style>
 </head>
 
@@ -60,26 +69,37 @@
   </div>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbz9orIGxO40_31m7wwgHUUxTej7RFV7CqKV_37OHgJ2oqB24TUgygUtZf1hHGAwt58oFA/exec"; // ← PUT YOUR /exec URL
+    const scriptURL = "YOUR_GOOGLE_WEB_APP_URL_HERE"; // <--- paste your Web App URL
 
-    document.getElementById("contactForm").addEventListener("submit", (e) => {
+    document.getElementById("contactForm").addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      fetch(scriptURL, {
-        method: "POST",
-        body: new FormData(e.target) // ← NO JSON, NO HEADERS (CORS-SAFE)
-      })
-      .then(res => res.text())
-      .then(() => {
-        document.getElementById("response").innerText = "Form Submitted Successfully!";
+      let data = {
+        name: e.target.name.value,
+        email: e.target.email.value,
+        phone: e.target.phone.value,
+        service: e.target.service.value,
+        message: e.target.message.value
+      };
+
+      try {
+        const res = await fetch(scriptURL + "?origin=" + location.origin, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        });
+
+        const json = await res.json();
+        document.getElementById("response").innerText = "Form submitted successfully!";
+
         e.target.reset();
-      })
-      .catch(() => {
-        document.getElementById("response").innerText = "Error submitting form.";
-      });
+      } catch (err) {
+        document.getElementById("response").innerText = "Error submitting the form.";
+      }
     });
   </script>
 
 </body>
 </html>
-
